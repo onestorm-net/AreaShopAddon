@@ -37,6 +37,9 @@ public class AreaShopAddon extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (areaShop == null) {
+            return;
+        }
         areaShop.getCommandManager().getCommands().remove(clearAllCommand);
     }
 
