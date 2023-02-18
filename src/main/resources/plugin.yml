@@ -1,0 +1,5 @@
+main: com.shebbasoft.areashop.addon.AreaShopAddon
+name: AreaShopAddon
+version: "${project.version}"
+depend: ["WorldGuard", "WorldEdit", "AreaShop"]
+author: Sheepert_
