@@ -71,7 +71,7 @@ public class ClearAllCommand extends CommandAreaShop {
                     .getEditSession(worldEditWorld, MAX_BLOCK_UPDATES);
                 editSession.setBlocks(worldEditRegion, new BaseBlock(MATERIAL_AIR_ID));
             } catch (MaxChangedBlocksException e) {
-                addon.getLogger().warning(e.getMessage());
+                addon.getLogger().warning(worldGuardRegion.getId() + ": "  + e.getMessage());
                 e.printStackTrace();
             }
         }
