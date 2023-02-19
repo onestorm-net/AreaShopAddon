@@ -52,8 +52,10 @@ public class ClearAllCommand extends CommandAreaShop {
         }
 
         for (RentRegion rentRegion : fileManager.getRents()) {
-            // Sadly no normal unRent method, it is expected that this method is run by a command
-            rentRegion.unRent(false, Bukkit.getConsoleSender());
+            if (rentRegion.isRented()) {
+                // Sadly no normal unRent method, it is expected that this method is run by a command
+                rentRegion.unRent(false, Bukkit.getConsoleSender());
+            }
 
             // Remove blocks.
             // WorldGuard
