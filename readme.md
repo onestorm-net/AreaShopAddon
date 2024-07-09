@@ -7,5 +7,6 @@ Permission: `areashop.clearall`
 # messages:
 clearall-success: "Cleared all (rentable) regions."
 clearall-noPermission: "You do not have the permission to clear all (rentable) regions."
+clearall-noRentRegions: "There are no (rentable) regions to clear."
 help-clearall: "Clear all (rentable) regions."
 ```
