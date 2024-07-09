@@ -1,30 +1,34 @@
-package com.shebbasoft.areashop.addon;
+package net.onestorm.plugins.areashopaddon;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.wiefferink.areashop.AreaShop;
 import me.wiefferink.areashop.commands.CommandAreaShop;
-import me.wiefferink.areashop.managers.FileManager;
+import me.wiefferink.areashop.libraries.inject.Inject;
+import me.wiefferink.areashop.managers.IFileManager;
 import me.wiefferink.areashop.regions.RentRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
+import java.util.logging.Level;
+
 public class ClearAllCommand extends CommandAreaShop {
 
     private static final String COMMAND_START = "areashop clearall";
-    private static final int MAX_BLOCK_UPDATES = 1000;
-    private static final int MATERIAL_AIR_ID = 0;
 
     private final AreaShopAddon addon;
     private final AreaShop plugin;
-    private final FileManager fileManager;
+    private final IFileManager fileManager;
 
+    @Inject
     public ClearAllCommand(AreaShopAddon addon) {
         this.addon = addon;
         this.plugin = addon.getAreaShop();
@@ -47,9 +51,19 @@ public class ClearAllCommand extends CommandAreaShop {
     @Override
     public void execute(CommandSender sender, String[] strings) {
         if (!sender.hasPermission("areashop.clearall")) {
-            plugin.message(sender, "clearall-noPermission");
+            addon.message(sender, "clearall-noPermission");
             return;
         }
+
+        Collection<RentRegion> rentRegions = fileManager.getRents();
+
+        if (rentRegions.isEmpty()) {
+            addon.message(sender, "clearall-noRentRegions");
+            return;
+        }
+
+        int size = rentRegions.size();
+        int counter = 0;
 
         for (RentRegion rentRegion : fileManager.getRents()) {
             if (rentRegion.isRented()) {
@@ -62,21 +76,23 @@ public class ClearAllCommand extends CommandAreaShop {
             ProtectedRegion worldGuardRegion = rentRegion.getRegion();
 
             // WorldEdit
-            World worldEditWorld = BukkitUtil.getLocalWorld(rentRegion.getWorld());
+            World worldEditWorld = new BukkitWorld(rentRegion.getWorld());
             Polygonal2DRegion worldEditRegion = new Polygonal2DRegion(worldEditWorld,
                     worldGuardRegion.getPoints(),
-                    worldGuardRegion.getMinimumPoint().getBlockY(),
-                    worldGuardRegion.getMaximumPoint().getBlockY());
+                    worldGuardRegion.getMinimumPoint().y(),
+                    worldGuardRegion.getMaximumPoint().y());
 
-            try {
-                EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(worldEditWorld, MAX_BLOCK_UPDATES);
-                editSession.setBlocks(worldEditRegion, new BaseBlock(MATERIAL_AIR_ID));
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(worldEditWorld))
+            {
+                editSession.setBlocks((Region) worldEditRegion, BlockTypes.AIR);
             } catch (MaxChangedBlocksException e) {
-                addon.getLogger().warning(worldGuardRegion.getId() + ": "  + e.getMessage());
-                e.printStackTrace();
+                addon.getLogger().log(Level.WARNING, "Region is to big to clear: " + worldGuardRegion.getId(), e);
+            } finally {
+                counter++;
+                if (size == counter) {
+                    addon.message(sender, "clearall-success");
+                }
             }
         }
-        plugin.message(sender, "clearall-success");
     }
 }
