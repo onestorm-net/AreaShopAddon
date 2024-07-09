@@ -1,5 +1,5 @@
-main: com.shebbasoft.areashop.addon.AreaShopAddon
+main: net.onestorm.plugins.areashopaddon.AreaShopAddon
 name: AreaShopAddon
 version: "${project.version}"
-depend: ["WorldGuard", "WorldEdit", "AreaShop"]
+depend: ["WorldGuard", "FastAsyncWorldEdit", "AreaShop"]
 author: Sheepert_
