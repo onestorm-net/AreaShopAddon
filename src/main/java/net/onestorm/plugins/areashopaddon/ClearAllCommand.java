@@ -9,7 +9,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import me.wiefferink.areashop.AreaShop;
 import me.wiefferink.areashop.commands.CommandAreaShop;
 import me.wiefferink.areashop.libraries.inject.Inject;
 import me.wiefferink.areashop.managers.IFileManager;
@@ -25,14 +24,12 @@ public class ClearAllCommand extends CommandAreaShop {
     private static final String COMMAND_START = "areashop clearall";
 
     private final AreaShopAddon addon;
-    private final AreaShop plugin;
     private final IFileManager fileManager;
 
     @Inject
     public ClearAllCommand(AreaShopAddon addon) {
         this.addon = addon;
-        this.plugin = addon.getAreaShop();
-        this.fileManager = plugin.getFileManager();
+        this.fileManager = addon.getAreaShop().getFileManager();
     }
 
     @Override
