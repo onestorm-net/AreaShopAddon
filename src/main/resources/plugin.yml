@@ -3,3 +3,4 @@ name: AreaShopAddon
 version: "${project.version}"
 depend: ["WorldGuard", "FastAsyncWorldEdit", "AreaShop"]
 author: Sheepert_
+api-version: "1.21"

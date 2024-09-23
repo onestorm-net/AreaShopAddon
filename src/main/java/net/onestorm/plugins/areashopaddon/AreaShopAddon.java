@@ -1,7 +1,7 @@
 package net.onestorm.plugins.areashopaddon;
 
 import me.wiefferink.areashop.AreaShop;
-import me.wiefferink.areashop.libraries.interactivemessenger.processing.Message;
+import net.onestorm.plugins.areashopaddon.command.ClearAllCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +12,6 @@ public class AreaShopAddon extends JavaPlugin {
     private static final String WORLD_GUARD_PLUGIN_NAME = "WorldGuard";
 
     private AreaShop areaShop = null;
-    private ClearAllCommand clearAllCommand = null;
 
     @Override
     public void onEnable() {
@@ -32,20 +31,8 @@ public class AreaShopAddon extends JavaPlugin {
             return;
         }
         areaShop = AreaShop.getInstance();
-        clearAllCommand = new ClearAllCommand(this);
-        areaShop.getCommandManager().getCommands().add(clearAllCommand);
-    }
+        getServer().getCommandMap().register(getName(), new ClearAllCommand(this));
 
-    public void message(Object target, String key, Object... replacements) {
-        Message.fromKey(key).prefix().replacements(replacements).send(target);
-    }
-
-    @Override
-    public void onDisable() {
-        if (areaShop == null) {
-            return;
-        }
-        areaShop.getCommandManager().getCommands().remove(clearAllCommand);
     }
 
     public AreaShop getAreaShop() {
